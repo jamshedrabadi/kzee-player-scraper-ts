@@ -1,0 +1,1 @@
+export const KZEE_RECORDS_URL = "https://kreedz.ee/records";

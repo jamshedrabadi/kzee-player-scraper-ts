@@ -1,6 +1,9 @@
-export const getRecords = () => {
+import { fetchKzeeRecords } from "../services/kzee.service.js";
+
+export const getRecords = async () => {
     try {
-        // todo: implement getRecords
+        const kzeeRecords = await fetchKzeeRecords();
+        console.log('kzeeRecords --- ', kzeeRecords);
     } catch (error) {
         console.log(error);
     }
