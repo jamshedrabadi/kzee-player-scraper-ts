@@ -1,4 +1,4 @@
-export function parseKzee(html: Document) {
+export const parseKzee = (html: Document) => {
     const table = html.querySelector("table");
     if (!table) {
         throw new Error("KZEE records list not found");
