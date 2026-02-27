@@ -1,6 +1,6 @@
 import * as readline from 'readline';
 
-export async function askPlayerCode (query: string) {
+export const askPlayerCode = async (query: string) => {
     while (true) {
         try {
             const input = await askQuestion(query);
