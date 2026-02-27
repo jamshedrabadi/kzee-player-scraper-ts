@@ -1,0 +1,19 @@
+{
+    "name": "kzee-player-scraper-ts",
+    "version": "1.0.0",
+    "description": "KZEE Scraper TS",
+    "license": "MIT",
+    "author": "Jam",
+    "type": "module",
+    "main": "index.ts",
+    "scripts": {
+        "dev": "tsx src/index.ts",
+        "build": "tsc",
+        "start": "node dist/index.js"
+    },
+    "devDependencies": {
+        "@types/node": "^25.3.2",
+        "tsx": "^4.21.0",
+        "typescript": "^5.9.3"
+    }
+}
