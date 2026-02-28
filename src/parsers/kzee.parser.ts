@@ -1,4 +1,6 @@
-export const parseKzee = (html: Document) => {
+import type { KzeeRecord } from "../types/kzee.record.js";
+
+export const parseKzee = (html: Document): KzeeRecord[] => {
     const table = html.querySelector("table");
     if (!table) {
         throw new Error("KZEE records list not found");

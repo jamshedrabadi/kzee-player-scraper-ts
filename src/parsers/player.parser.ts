@@ -1,4 +1,6 @@
-export const parsePlayer = async (html: Document) => {
+import type { PlayerData } from "../types/player.data.js";
+
+export const parsePlayer = (html: Document): PlayerData => {
     const playerName = parsePlayerName(html);
     if (!playerName) {
         throw new Error("Player not found")
@@ -25,8 +27,8 @@ export const parsePlayer = async (html: Document) => {
     return { playerName, playerData };
 }
 
-export const parsePlayerName = (html: Document) => {
+export const parsePlayerName = (html: Document): string | null => {
     const playerName = html.querySelector(".playername");
 
-    return playerName ? playerName.textContent : playerName;
+    return playerName ? playerName.textContent.trim() : playerName;
 }

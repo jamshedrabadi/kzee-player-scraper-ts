@@ -1,6 +1,6 @@
 import * as readline from 'readline';
 
-export const askPlayerCode = async (query: string) => {
+export const askPlayerCode = async (query: string): Promise<number> => {
     while (true) {
         try {
             const input = await askQuestion(query);
@@ -18,7 +18,7 @@ export const askPlayerCode = async (query: string) => {
     }
 }
 
-const askQuestion = async (query: string) => {
+const askQuestion = async (query: string): Promise<string> => {
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout

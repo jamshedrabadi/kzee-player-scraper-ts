@@ -3,7 +3,7 @@ import { JSDOM } from "jsdom";
 import { delay } from "../utils/delay.js";
 import { API_DELAY } from "../config/constants.js";
 
-export const fetchHtml = async (url: string | URL) => {
+export const fetchHtml = async (url: URL | string): Promise<Document> => {
     await delay(API_DELAY); // Safe delay to prevent server overloads and rate limits
 
     const response = await fetch(url);
