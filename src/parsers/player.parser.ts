@@ -21,11 +21,11 @@ export const parsePlayer = (html: Document): PlayerData => {
         const cells = [...row.querySelectorAll("td")];
 
         return {
-            map: cells[1]?.querySelector("a")?.textContent.trim() || "",
-            time: cells[2]?.textContent.trim() || "",
-            date: cells[3]?.textContent.trim() || "",
-            position: cells[4]?.textContent.trim() || "",
-            average: cells[5]?.textContent.trim() || ""
+            map: cells[1]?.querySelector("a")?.textContent?.trim() || "",
+            time: cells[2]?.textContent?.trim() || "",
+            date: cells[3]?.textContent?.trim() || "",
+            position: cells[4]?.textContent?.trim() || "",
+            average: cells[5]?.textContent?.trim() || ""
         };
     });
 
@@ -35,7 +35,7 @@ export const parsePlayer = (html: Document): PlayerData => {
 export const parsePlayerName = (html: Document): string | null => {
     const playerName = html.querySelector(".playername");
 
-    return playerName ? playerName.textContent.trim() : playerName;
+    return playerName ? playerName.textContent?.trim() : playerName;
 }
 
 export const mergeRecords = (kzeeRecords: KzeeRecord[], playerRecords: PlayerRecord[]): MergedRecord[] => {
@@ -68,12 +68,20 @@ export const mergeRecords = (kzeeRecords: KzeeRecord[], playerRecords: PlayerRec
         };
     });
 
-    mergedRecords.sort((a, b) => {
-        const aIndex = DIFFICULTY_ORDER.indexOf(a.difficulty);
-        const bIndex = DIFFICULTY_ORDER.indexOf(b.difficulty);
+    const difficultyMap = new Map(
+        DIFFICULTY_ORDER.map((d, i) => ([d, i]))
+    );
+    mergedRecords.sort((a, b) => 
+        difficultyMap.get(a.difficulty)! - difficultyMap.get(b.difficulty)!
+    );
 
-        return aIndex - bIndex;
-    });
+    // below is unoptimized O(n), while above is O(1)
+    // mergedRecords.sort((a, b) => {
+    //     const aIndex = DIFFICULTY_ORDER.indexOf(a.difficulty);
+    //     const bIndex = DIFFICULTY_ORDER.indexOf(b.difficulty);
+
+    //     return aIndex - bIndex;
+    // });
 
     return mergedRecords;
 }

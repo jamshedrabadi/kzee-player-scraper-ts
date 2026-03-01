@@ -11,13 +11,13 @@ export const parseKzee = (html: Document): KzeeRecord[] => {
         const cells = [...row.querySelectorAll("td")];
 
         return {
-            map: cells[0]?.querySelector("a")?.textContent.trim() || "",
-            player: cells[1]?.querySelector(".playerlink")?.textContent.trim() || "",
-            time: cells[2]?.textContent.trim() || "",
-            date: cells[3]?.textContent.trim() || "",
-            difficulty: cells[4]?.textContent.trim() || "",
-            length: cells[5]?.textContent.trim() || "",
-            type: cells[6]?.textContent.trim() || ""
+            map: cells[0]?.querySelector("a")?.textContent?.trim() || "",
+            player: cells[1]?.querySelector(".playerlink")?.textContent?.trim() || "",
+            time: cells[2]?.textContent?.trim() || "",
+            date: cells[3]?.textContent?.trim() || "",
+            difficulty: cells[4]?.textContent?.trim() || "",
+            length: cells[5]?.textContent?.trim() || "",
+            type: cells[6]?.textContent?.trim() || ""
         };
     });
 

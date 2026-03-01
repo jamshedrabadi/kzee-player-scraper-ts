@@ -5,7 +5,7 @@ import { fetchPlayerRecords, mergePlayerRecords } from "../services/player.servi
 import { generateHtml } from "../templates/player.template.js";
 import { writeFile, openFile } from "../utils/file.utils.js";
 
-export const getRecords = async () => {
+export const getRecords = async (): Promise<void> => {
     try {
         const kzeeRecords = await fetchKzeeRecords();
         const playerCode = await askPlayerCode(PLAYER_CODE_MESSAGE);
@@ -15,6 +15,10 @@ export const getRecords = async () => {
         writeFile(generatedHtml);
         await openFile();
     } catch (error) {
-        console.log(error);
+        if (error instanceof Error) {
+            console.error(error.message);
+        } else {
+            console.error(error);
+        }
     }
 }
