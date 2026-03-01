@@ -1,4 +1,9 @@
+import type { KzeeRecord } from "../types/kzee.record.js";
+import type { MapInfo } from "../types/map.info.js";
+import type { MergedRecord } from "../types/merged.record.js";
 import type { PlayerData } from "../types/player.data.js";
+import type { PlayerRecord } from "../types/player.record.js";
+import { DIFFICULTY_ORDER } from "../config/constants.js";
 
 export const parsePlayer = (html: Document): PlayerData => {
     const playerName = parsePlayerName(html);
@@ -31,4 +36,44 @@ export const parsePlayerName = (html: Document): string | null => {
     const playerName = html.querySelector(".playername");
 
     return playerName ? playerName.textContent.trim() : playerName;
+}
+
+export const mergeRecords = (kzeeRecords: KzeeRecord[], playerRecords: PlayerRecord[]): MergedRecord[] => {
+    const mapLookup: MapInfo = {}; // Build fast lookup table from kzeeRecords
+
+    kzeeRecords.forEach(record => {
+        mapLookup[record.map] = {
+            length: record.length,
+            difficulty: record.difficulty,
+            type: record.type
+        };
+    });
+
+    // Merge based on map
+    const mergedRecords = playerRecords.map(record => {
+        const currentMap = mapLookup[record.map];
+        if (!currentMap) {
+            throw new Error(`Map not found in kzeeRecords: ${record.map}`);
+        }
+
+        return {
+            map: record.map,
+            position: record.position,
+            average: record.average,
+            time: record.time,
+            date: record.date,
+            type: currentMap.type,
+            length: currentMap.length,
+            difficulty: currentMap.difficulty,
+        };
+    });
+
+    mergedRecords.sort((a, b) => {
+        const aIndex = DIFFICULTY_ORDER.indexOf(a.difficulty);
+        const bIndex = DIFFICULTY_ORDER.indexOf(b.difficulty);
+
+        return aIndex - bIndex;
+    });
+
+    return mergedRecords;
 }
