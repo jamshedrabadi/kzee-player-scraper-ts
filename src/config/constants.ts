@@ -17,3 +17,5 @@ export const DIFFICULTY_ORDER = [
     "easy",
     "beginner",
 ];
+
+export const OUTPUT_FILE = "../../output_files/playerHtml.html";
