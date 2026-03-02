@@ -1,8 +1,8 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import open from 'open';
+import * as fs from "fs";
+import * as path from "path";
+import open from "open";
 
-import { OUTPUT_FILE } from '../config/constants.js';
+import { OUTPUT_FILE } from "../config/constants.js";
 
 export const writeFile = (html: string) => {
     fs.writeFileSync(
