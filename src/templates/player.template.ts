@@ -1,8 +1,11 @@
 import { escapeHtml } from "../utils/html.utils.js";
 import type { MergedRecord } from "../types/merged.record.js";
+import { DIFFICULTY_ORDER } from "../config/constants.js";
 
 export const generateHtml = (playerName: string, playerRecords: MergedRecord[]): string => {
     const rows = generateRows(playerRecords);
+    const styles = generateStyles();
+    const script = generateScript();
 
     const html = `<!DOCTYPE html>
 <html>
@@ -12,7 +15,7 @@ export const generateHtml = (playerName: string, playerRecords: MergedRecord[]):
   <title>Kreedz Records</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
+  ${styles}
 </head>
 
 <body>
@@ -23,15 +26,17 @@ export const generateHtml = (playerName: string, playerRecords: MergedRecord[]):
     <table class="table table-bordered table-striped">
       <thead class="table-dark">
         <tr>
-          <th>#</th>
-          <th>Map</th>
-          <th>Position</th>
-          <th>Average</th>
-          <th>Time</th>
-          <th>Date</th>
-          <th>Type</th>
-          <th>Length</th>
-          <th>Difficulty</th>
+          <th onclick="sortTable(0)" class="sortable active">
+            # <span class="arrow">▼</span>
+          </th>
+          <th onclick="sortTable(1)" class="sortable">Map <span class="arrow"></span></th>
+          <th onclick="sortTable(2)" class="sortable">Position <span class="arrow"></span></th>
+          <th onclick="sortTable(3)" class="sortable">Average <span class="arrow"></span></th>
+          <th onclick="sortTable(4)" class="sortable">Time <span class="arrow"></span></th>
+          <th onclick="sortTable(5)" class="sortable">Date <span class="arrow"></span></th>
+          <th onclick="sortTable(6)" class="sortable">Type <span class="arrow"></span></th>
+          <th onclick="sortTable(7)" class="sortable">Length <span class="arrow"></span></th>
+          <th onclick="sortTable(8)" class="sortable">Difficulty <span class="arrow"></span></th>
         </tr>
       </thead>
 
@@ -40,6 +45,7 @@ export const generateHtml = (playerName: string, playerRecords: MergedRecord[]):
     </table>
 
   </div>
+  ${script}
 
 </body>
 
@@ -64,4 +70,114 @@ export const generateRows = (playerRecords: MergedRecord[]): string => {
         </tr>` }).join("");
 
     return rows;
+}
+
+export const generateStyles = (): string => {
+    const styles = `
+  <style>
+    .sortable {
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .arrow {
+      margin-left: 6px;
+      font-size: 0.8rem;
+    }
+
+    tbody {
+      transition: opacity 0.15s ease;
+    }
+  </style>`;
+
+    return styles;
+}
+
+export const generateScript = (): string => {
+    const script = `
+  <script>
+
+    const difficultyOrder = ${JSON.stringify(DIFFICULTY_ORDER)};
+    let currentSortColumn = 0; // # column active
+    let currentDirection = "desc";
+
+    function sortTable(columnIndex) {
+
+      const table = document.querySelector("table");
+      const tbody = table.querySelector("tbody");
+      const headers = document.querySelectorAll("th");
+      const rows = Array.from(tbody.querySelectorAll("tr"));
+
+      // Fade out
+      tbody.style.opacity = "0";
+
+      setTimeout(() => {
+
+        // If clicking same column → toggle
+        if (columnIndex === currentSortColumn) {
+          currentDirection = currentDirection === "asc" ? "desc" : "asc";
+        } else {
+          currentSortColumn = columnIndex;
+          currentDirection = "asc";
+        }
+
+        rows.sort((a, b) => {
+
+          // # column sorts by difficulty instead
+          if ([0, 8].includes(columnIndex)) {
+            const aDiff = a.children[8].innerText.trim().toLowerCase();
+            const bDiff = b.children[8].innerText.trim().toLowerCase();
+            const aIndex = difficultyOrder.indexOf(aDiff);
+            const bIndex = difficultyOrder.indexOf(bDiff);
+
+            return currentDirection === "asc"
+              ? aIndex - bIndex
+              : bIndex - aIndex;
+          }
+
+          let aValue = a.children[columnIndex].innerText.trim();
+          let bValue = b.children[columnIndex].innerText.trim();
+
+          const aNum = Number(aValue);
+          const bNum = Number(bValue);
+          const isNumeric = !isNaN(aNum) && !isNaN(bNum);
+
+          if (isNumeric) {
+            return currentDirection === "asc"
+              ? aNum - bNum
+              : bNum - aNum;
+          }
+
+          return currentDirection === "asc"
+            ? aValue.localeCompare(bValue)
+            : bValue.localeCompare(aValue);
+        });
+
+        rows.forEach(row => tbody.appendChild(row));
+
+        // Update numbering column
+        rows.forEach((row, index) => {
+          row.children[0].innerText = index + 1;
+        });
+
+        // Remove all arrows & active states
+        headers.forEach(header => {
+          header.classList.remove("active");
+          header.querySelector(".arrow").innerText = "";
+        });
+
+        // Keep arrow on active column
+        headers[currentSortColumn].classList.add("active");
+        headers[currentSortColumn].querySelector(".arrow").innerText =
+          currentDirection === "asc" ? "▲" : "▼";
+
+        // Fade back in
+        tbody.style.opacity = "1";
+
+      }, 150);
+    }
+
+  </script>`;
+
+    return script;
 }
