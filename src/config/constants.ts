@@ -18,4 +18,12 @@ export const DIFFICULTY_ORDER = [
     "beginner",
 ];
 
+export const LENGTH_ORDER = [
+    "very-long",
+    "long",
+    "middle",
+    "short",
+    "very-short",
+];
+
 export const OUTPUT_FILE = "../../output_files/playerHtml.html";

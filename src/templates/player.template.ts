@@ -1,6 +1,6 @@
 import { escapeHtml } from "../utils/html.utils.js";
 import type { MergedRecord } from "../types/merged.record.js";
-import { DIFFICULTY_ORDER } from "../config/constants.js";
+import { DIFFICULTY_ORDER, LENGTH_ORDER } from "../config/constants.js";
 
 export const generateHtml = (playerName: string, playerRecords: MergedRecord[]): string => {
     const rows = generateRows(playerRecords);
@@ -26,9 +26,7 @@ export const generateHtml = (playerName: string, playerRecords: MergedRecord[]):
     <table class="table table-bordered table-striped">
       <thead class="table-dark">
         <tr>
-          <th onclick="sortTable(0)" class="sortable active">
-            # <span class="arrow">▼</span>
-          </th>
+          <th class="sortable"># <span class="arrow"></span></th>
           <th onclick="sortTable(1)" class="sortable">Map <span class="arrow"></span></th>
           <th onclick="sortTable(2)" class="sortable">Position <span class="arrow"></span></th>
           <th onclick="sortTable(3)" class="sortable">Average <span class="arrow"></span></th>
@@ -36,7 +34,7 @@ export const generateHtml = (playerName: string, playerRecords: MergedRecord[]):
           <th onclick="sortTable(5)" class="sortable">Date <span class="arrow"></span></th>
           <th onclick="sortTable(6)" class="sortable">Type <span class="arrow"></span></th>
           <th onclick="sortTable(7)" class="sortable">Length <span class="arrow"></span></th>
-          <th onclick="sortTable(8)" class="sortable">Difficulty <span class="arrow"></span></th>
+          <th onclick="sortTable(8)" class="sortable active">Difficulty <span class="arrow">▼</span></th>
         </tr>
       </thead>
 
@@ -97,8 +95,9 @@ export const generateScript = (): string => {
     const script = `
   <script>
 
+    const lengthOrder = ${JSON.stringify(LENGTH_ORDER)};
     const difficultyOrder = ${JSON.stringify(DIFFICULTY_ORDER)};
-    let currentSortColumn = 0; // # column active
+    let currentSortColumn = 8; // # column active
     let currentDirection = "desc";
 
     function sortTable(columnIndex) {
@@ -113,7 +112,7 @@ export const generateScript = (): string => {
 
       setTimeout(() => {
 
-        // If clicking same column → toggle
+        // If clicking same column then toggle
         if (columnIndex === currentSortColumn) {
           currentDirection = currentDirection === "asc" ? "desc" : "asc";
         } else {
@@ -123,16 +122,17 @@ export const generateScript = (): string => {
 
         rows.sort((a, b) => {
 
-          // # column sorts by difficulty instead
-          if ([0, 8].includes(columnIndex)) {
-            const aDiff = a.children[8].innerText.trim().toLowerCase();
-            const bDiff = b.children[8].innerText.trim().toLowerCase();
-            const aIndex = difficultyOrder.indexOf(aDiff);
-            const bIndex = difficultyOrder.indexOf(bDiff);
+          if ([7, 8].includes(columnIndex)) { // length, difficulty
+            const newOrder = columnIndex === 7 ? lengthOrder : difficultyOrder;
+
+            const aDiff = a.children[columnIndex].innerText.trim().toLowerCase();
+            const bDiff = b.children[columnIndex].innerText.trim().toLowerCase();
+            const aIndex = newOrder.indexOf(aDiff);
+            const bIndex = newOrder.indexOf(bDiff);
 
             return currentDirection === "asc"
-              ? aIndex - bIndex
-              : bIndex - aIndex;
+              ? bIndex - aIndex
+              : aIndex - bIndex;
           }
 
           let aValue = a.children[columnIndex].innerText.trim();

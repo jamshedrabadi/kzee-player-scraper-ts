@@ -1,3 +1,4 @@
+import { convertDate } from "../utils/date.utils.js";
 import type { KzeeRecord } from "../types/kzee.record.js";
 import type { MapInfo } from "../types/map.info.js";
 import type { MergedRecord } from "../types/merged.record.js";
@@ -61,7 +62,7 @@ export const mergeRecords = (kzeeRecords: KzeeRecord[], playerRecords: PlayerRec
             position: record.position,
             average: record.average,
             time: record.time,
-            date: record.date,
+            date: convertDate(record.date),
             type: currentMap.type,
             length: currentMap.length,
             difficulty: currentMap.difficulty,
